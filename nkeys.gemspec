@@ -19,8 +19,8 @@ require File.expand_path('../lib/nkeys/version', __FILE__)
 
 spec = Gem::Specification.new do |s|
   s.name = 'nkeys'
-  s.version = NATS::NKEYS::VERSION
-  s.summary = 'NATS Keys for Ruby'
+  s.version = NKEYS::VERSION
+  s.summary = 'NKEYS for Ruby'
   s.homepage = 'https://nats.io'
   s.description = 'NATS Keys for Ruby'
   s.licenses = ['MIT']

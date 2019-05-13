@@ -1,3 +1,4 @@
+
 # Copyright 2018 The NATS Authors
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,64 +17,64 @@ require 'base32'
 require 'nkeys/version'
 require 'nkeys/crc16'
 
-module NATS
-  module NKEYS
+module NKEYS
 
-    class Error < StandardError; end #:nodoc:
+  class Error < StandardError; end #:nodoc:
 
-    class KeyPair
-      attr_reader :seed, :public_key, :private_key
+  class InvalidSeed < Error; end #:nodoc:
 
-      def initialize(opts={})
-        @seed = opts[:seed]
-        @public_key = opts[:public_key]
-        @private_key = opts[:private_key]
-        @keys = opts[:keys]
+  class KeyPair
+    attr_reader :seed, :public_key, :private_key
+
+    def initialize(opts={})
+      @seed = opts[:seed]
+      @public_key = opts[:public_key]
+      @private_key = opts[:private_key]
+      @keys = opts[:keys]
+    end
+
+    # Sign will sign the input with KeyPair's private key.
+    # @param [String] input
+    # @return [String] signed raw data
+    def sign(input)
+      raise ::NKEYS::Error, "nkeys: Missing keys for signing" if @keys.nil?
+
+      @keys.sign(input)
+    end
+
+    # Verify the input againt a signature utilizing the public key.
+    # @param [String] input
+    # @param [String] sig
+    # @return [Bool] the result of verifying the signed input.
+    def verify(input, sig)
+      # TODO: Should both input and signature be a binary ASCII-8BIT encoding?
+    end
+
+    def public_key
+      return @public_key unless @public_key.nil?
+      # TODO: If no keys present then try to generate from seed.
+      # prefix, public_raw = ::NATS::NKEYS::decode_seed(@seed)
+
+      pk = @keys.verify_key.to_bytes.unpack("C*")
+      pk.prepend(PREFIX_BYTE_USER)
+
+      # Include crc16 checksum.
+      crc16 = NKEYS::crc16(pk)
+      crc16_suffix = [crc16].pack("s<*")
+      crc16_suffix.each_byte do |b|
+        pk << b
       end
+      res = pk.pack("c*")
 
-      # Sign will sign the input with KeyPair's private key.
-      # @param [String] input
-      # @return [String] signed raw data
-      def sign(input)
-        raise ::NKEYS::Error, "nkeys: Missing keys for signing" if @keys.nil?
+      # Remove padding since Base32 library always uses padding...
+      @public_key = Base32.encode(res).gsub("=", '')
 
-        @keys.sign(input)
-      end
+      @public_key
+    end
 
-      # Verify the input againt a signature utilizing the public key.
-      # @param [String] input
-      # @param [String] sig
-      # @return [Bool] the result of verifying the signed input.
-      def verify(input, sig)
-        # TODO: Should both input and signature be a binary ASCII-8BIT encoding?
-      end
-
-      def public_key
-        return @public_key unless @public_key.nil?
-        # TODO: If no keys present then try to generate from seed.
-        # prefix, public_raw = ::NATS::NKEYS::decode_seed(@seed)
-
-        pk = @keys.verify_key.to_bytes.unpack("C*")
-        pk.prepend(PREFIX_BYTE_USER)
-
-        # Include crc16 checksum.
-        crc16 = NATS::NKEYS::crc16(pk)
-        crc16_suffix = [crc16].pack("s<*")
-        crc16_suffix.each_byte do |b|
-          pk << b
-        end
-        res = pk.pack("c*")
-
-        # FIXME: Workaround since Base32 library always uses padding...
-        @public_key = Base32.encode(res).gsub("=", '')
-
-        @public_key
-      end
-
-      def private_key
-        return @private_key unless @private_key.nil?
-        # TODO
-      end
+    def private_key
+      return @private_key unless @private_key.nil?
+      # TODO
     end
   end
 end
