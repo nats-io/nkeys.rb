@@ -16,23 +16,17 @@ require 'base64'
 require 'spec_helper'
 
 describe 'NKEYS' do
-  let(:seed) {
-    "SUAEL6RU3BSDAFKOHNTEOK5Q6FTM5FTAMWVIKBET6FHPO4JRII3CYELVNM"
-  }
-
-  let(:nonce) {
-    "jxb0seV48g5ahgw="
-  }
-
-  it 'should generate a KeyPair from a seed that can be used to sign and messages' do
-    kp = NATS::NKEYS::from_seed(seed)
+  it 'should generate a KeyPair from a seed that can be used for signing' do
+    seed = "SUAMLK2ZNL35WSMW37E7UD4VZ7ELPKW7DHC3BWBSD2GCZ7IUQQXZIORRBU"
+    nonce = "PXoWU7zWAMt75FY"
+    kp = NKEYS::from_seed(seed)
     signed_nonce = kp.sign(nonce)
     encoded_signed_nonce = Base64.strict_encode64(signed_nonce)
-    expect(encoded_signed_nonce).to eql("SOOgRmACgje+P1JcrZzs5vSlN70xu3h4tt6UQEO+VKfaD0BVuCeFqcoj6T1HYaLKW2UGa3F2DUVUSVh2rCUvCQ==")
+    expect(encoded_signed_nonce).to eql("ZaAiVDgB5CeYoXoQ7cBCmq+ZllzUnGUoDVb8C7PilWvCs8XKfUchAUhz2P4BYAF++Dg3w05CqyQFRDiGL6LrDw==")
   end
 
-  it "should generate a public key from the KeyPair from a seed" do
-    kp = NATS::NKEYS::from_seed(seed)
-    expect(kp.public_key).to eql("UCARKS2E3KVB7YORL2DG34XLT7PUCOL2SVM7YXV6ETHLW6Z46UUJ2VZ3")
+  it "should be able to generate a public key from a seed" do
+    kp = NKEYS::from_seed("SUAMLK2ZNL35WSMW37E7UD4VZ7ELPKW7DHC3BWBSD2GCZ7IUQQXZIORRBU")
+    expect(kp.public_key).to eql("UCK5N7N66OBOINFXAYC2ACJQYFSOD4VYNU6APEJTAVFZB2SVHLKGEW7L")
   end
 end
