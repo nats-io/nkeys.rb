@@ -29,4 +29,10 @@ describe 'NKEYS' do
     kp = NKEYS::from_seed("SUAMLK2ZNL35WSMW37E7UD4VZ7ELPKW7DHC3BWBSD2GCZ7IUQQXZIORRBU")
     expect(kp.public_key).to eql("UCK5N7N66OBOINFXAYC2ACJQYFSOD4VYNU6APEJTAVFZB2SVHLKGEW7L")
   end
+
+  it "should raise error when seed has bad padding" do
+    expect do
+      NKEYS::from_seed("UAMLK2ZNL35WSMW37E7UD4VZ7ELPKW7DHC3BWBSD2GCZ7IUQQXZIORRBU")
+    end.to raise_error NKEYS::InvalidSeed
+  end
 end

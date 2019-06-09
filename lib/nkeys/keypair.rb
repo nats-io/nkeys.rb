@@ -23,6 +23,8 @@ module NKEYS
 
   class InvalidSeed < Error; end #:nodoc:
 
+  class InvalidPrefixByte < Error; end #:nodoc:
+
   class KeyPair
     attr_reader :seed, :public_key, :private_key
 

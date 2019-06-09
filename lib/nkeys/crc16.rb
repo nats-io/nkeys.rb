@@ -12,9 +12,9 @@
 # limitations under the License.
 #
 
-module NKEYS   
+module NKEYS
   class << self
-   
+
     def crc16(data)
       crc = 0
       data.each do |b|

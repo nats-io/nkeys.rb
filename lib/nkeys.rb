@@ -68,9 +68,9 @@ module NKEYS
 
       case
       when b1 != PREFIX_BYTE_SEED
-        raise NKEYS::Error, "nkeys: Invalid Seed"
+        raise NKEYS::InvalidSeed, "nkeys: Invalid Seed"
       when !valid_public_prefix_byte(b2)
-        raise NKEYS::Error, "nkeys: Invalid Byte Prefix"
+        raise NKEYS::InvalidPrefixByte, "nkeys: Invalid Prefix Byte"
       end
 
       prefix = b2
