@@ -17,18 +17,17 @@ require 'nkeys'
 require 'base64'
 
 def usage
-  puts "Usage: nkeys-sign [-s SEED] [-d DATA]"; exit
+  puts "Usage: nk [-s SEED] [-d DATA]"; exit
 end
 
 args = ARGV.dup
 opts_parser = OptionParser.new do |opts|
-  opts.on('-s SEED') { |s| $seed = s }
-  opts.on('-d DATA') { |d| $data = d }
-  opts.on('--seed SEED') { |s| $seed = s }
-  opts.on('--data DATA') { |d| $data = d }
+  opts.on('--inkey SEED') { |s| $seed = s }
+  opts.on('--sign DATA') { |d| $data = d }
 end
 opts_parser.parse!(args)
 
-kp = NATS::NKEYS::from_seed($seed)
-signed = kp.sign($data)
+kp = NKEYS::from_seed(File.read($seed))
+
+signed = kp.sign(File.read($data))
 puts Base64.strict_encode64(signed)

@@ -21,7 +21,7 @@ require 'base64'
 # that can be used to signed messages.
 seed = "SUADZTYQAKTY5NQM7XRB5XR3C24M6ROGZLBZ6P5HJJSSOFUGC5YXOOECOM"
 
-kp = NATS::NKEYS::from_seed(seed)
+kp = NKEYS::from_seed(seed)
 puts "SEED:       #{kp.seed}"
 puts "PUBLIC KEY: #{kp.public_key}"
 
