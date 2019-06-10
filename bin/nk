@@ -30,4 +30,4 @@ opts_parser.parse!(args)
 kp = NKEYS::from_seed(File.read($seed))
 
 signed = kp.sign(File.read($data))
-puts Base64.strict_encode64(signed)
+puts Base64.urlsafe_encode64(signed).gsub('=', '')

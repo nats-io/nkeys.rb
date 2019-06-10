@@ -55,10 +55,19 @@ module NKEYS
     end
 
     def decode_seed(src)
+      if src.nil? || src.empty?
+        raise NKEYS::InvalidSeed, "nkeys: Invalid Seed"
+      end
+
       # Take the encoded seed if provided and generate the private and public keys,
       # since both are needed to be able to sign things.
-      base32_decoded = Base32.decode(src).bytes
-      raw = base32_decoded[0...(base32_decoded.size-2)]
+      raw = nil
+      begin
+        base32_decoded = Base32.decode(src).bytes
+        raw = base32_decoded[0...(base32_decoded.size-2)]
+      rescue
+        raise NKEYS::InvalidSeed, "nkeys: Invalid Seed"
+      end
 
       # 248 = 11111000
       b1 = raw[0] & 248
@@ -66,10 +75,9 @@ module NKEYS
       # 7 = 00000111
       b2 = (raw[0] & 7) << 5 | ((raw[1] & 248) >> 3)
 
-      case
-      when b1 != PREFIX_BYTE_SEED
+      if b1 != PREFIX_BYTE_SEED
         raise NKEYS::InvalidSeed, "nkeys: Invalid Seed"
-      when !valid_public_prefix_byte(b2)
+      elsif !valid_public_prefix_byte(b2)
         raise NKEYS::InvalidPrefixByte, "nkeys: Invalid Prefix Byte"
       end
 
@@ -81,9 +89,9 @@ module NKEYS
 
     def valid_public_prefix_byte(prefix)
       case
+      when prefix == PREFIX_BYTE_OPERATOR; true
       when prefix == PREFIX_BYTE_SERVER; true
       when prefix == PREFIX_BYTE_CLUSTER; true
-      when prefix == PREFIX_BYTE_OPERATOR; true
       when prefix == PREFIX_BYTE_ACCOUNT; true
       when prefix == PREFIX_BYTE_USER; true
       else
