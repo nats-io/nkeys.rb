@@ -2,6 +2,7 @@
 
 [![License Apache 2](https://img.shields.io/badge/License-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/nats-io/nkeys.rb.svg?branch=master)](http://travis-ci.org/nats-io/nkeys.rb)
+[![Gem Version](https://d25lcipzij17d.cloudfront.net/badge.svg?id=rb&type=5&v=0.1.0)](https://rubygems.org/gems/nkeys/versions/0.1.0)
 
 A public-key signature system based on [Ed25519](https://ed25519.cr.yp.to/) for the [NATS](https://nats.io) ecosystem.
 
