@@ -49,7 +49,8 @@ module NKEYS
     # @param [String] sig
     # @return [Bool] the result of verifying the signed input.
     def verify(input, sig)
-      # TODO: Should both input and signature be a binary ASCII-8BIT encoding?
+      # TODO
+      return
     end
 
     def public_key
@@ -78,5 +79,13 @@ module NKEYS
       return @private_key unless @private_key.nil?
       # TODO
     end
+
+    def wipe
+      @seed.clear if @seed
+      @public_key.clear if @public_key
+      @private_key.clear if @private_key
+      @keys = nil
+    end
+    alias_method :wipe!, :wipe
   end
 end
