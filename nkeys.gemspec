@@ -26,8 +26,8 @@ spec = Gem::Specification.new do |s|
   s.licenses = ['MIT']
   s.authors = ['Waldemar Quevedo']
   s.email = ['wally@synadia.com']
-  s.add_dependency('ed25519')
-  s.add_dependency('base32')
+  s.add_dependency('ed25519', '~> 1.2')
+  s.add_dependency('base32', '~> 0.3')
   s.require_paths = ['lib']
 
   s.files = %w[
