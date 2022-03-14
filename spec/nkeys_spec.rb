@@ -23,6 +23,7 @@ describe 'NKEYS' do
     signed_nonce = kp.sign(nonce)
     encoded_signed_nonce = Base64.strict_encode64(signed_nonce)
     expect(encoded_signed_nonce).to eql("ZaAiVDgB5CeYoXoQ7cBCmq+ZllzUnGUoDVb8C7PilWvCs8XKfUchAUhz2P4BYAF++Dg3w05CqyQFRDiGL6LrDw==")
+    expect(kp.verify(nonce, signed_nonce)).to be_truthy
   end
 
   it "should raise error when seed has bad padding" do
