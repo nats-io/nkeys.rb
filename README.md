@@ -63,7 +63,20 @@ signed = kp.sign(data)
 puts "SIGNED:     #{Base64.urlsafe_encode64(signed)}"
 
 # Clear the keys after using them
-kp.wipe!
+kp.clear
+
+## Create keys
+uk = NKEYS.create_operator
+puts "SEED:       #{uk.seed}"
+puts "PUBLIC KEY: #{uk.public_key}"
+
+uk = NKEYS.create_user
+puts "SEED:       #{uk.seed}"
+puts "PUBLIC KEY: #{uk.public_key}"
+
+uk = NKEYS.create_user
+puts "SEED:       #{uk.seed}"
+puts "PUBLIC KEY: #{uk.public_key}"
 ```
 
 ## License
