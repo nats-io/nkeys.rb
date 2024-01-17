@@ -12,105 +12,85 @@
 # limitations under the License.
 #
 require 'base32'
+require_relative 'nkeys/prefixes'
+require_relative 'nkeys/errors'
+require_relative 'nkeys/codec'
 require_relative 'nkeys/keypair'
 
 module NKEYS
 
   # PREFIX_BYTE_SEED is the version byte used for encoded NATS Seeds
-  PREFIX_BYTE_SEED     = 18 << 3    # Base32-encodes to 'S...'
+  PREFIX_BYTE_SEED = 18 << 3 # Base32-encodes to 'S...'
 
   # PREFIX_BYTE_PRIVATE is the version byte used for encoded NATS Private keys
-  PREFIX_BYTE_PRIVATE  = 15 << 3    # Base32-encodes to 'P...'
+  PREFIX_BYTE_PRIVATE = 15 << 3 # Base32-encodes to 'P...'
 
   # PREFIX_BYTE_SERVER is the version byte used for encoded NATS Servers
-  PREFIX_BYTE_SERVER   = 13 << 3    # Base32-encodes to 'N...'
+  PREFIX_BYTE_SERVER = 13 << 3 # Base32-encodes to 'N...'
 
   # PREFIX_BYTE_CLUSTER is the version byte used for encoded NATS Clusters
-  PREFIX_BYTE_CLUSTER  = 2 << 3     # Base32-encodes to 'C...'
+  PREFIX_BYTE_CLUSTER = 2 << 3 # Base32-encodes to 'C...'
 
   # PREFIX_BYTE_OPERATOR is the version byte used for encoded NATS Operators
-  PREFIX_BYTE_OPERATOR = 14 << 3    # Base32-encodes to 'O...'
+  PREFIX_BYTE_OPERATOR = 14 << 3 # Base32-encodes to 'O...'
 
   # PREFIX_BYTE_ACCOUNT is the version byte used for encoded NATS Accounts
-  PREFIX_BYTE_ACCOUNT  = 0          # Base32-encodes to 'A...'
+  PREFIX_BYTE_ACCOUNT = 0 # Base32-encodes to 'A...'
 
   # PREFIX_BYTE_USER is the version byte used for encoded NATS Users
-  PREFIX_BYTE_USER     = 20 << 3    # Base32-encodes to 'U...'
+  PREFIX_BYTE_USER = 20 << 3 # Base32-encodes to 'U...'
 
   class << self
 
-    # Create a keypair to use for signing from a seed.
-    # @param [String] seed The seed from which can create a public/private KeyPair.
-    def from_seed(seed)
-      _, raw_seed = decode_seed(seed)
-      keys = Ed25519::SigningKey.new(raw_seed)
+    # @return [NKEYS::KeyPair]
+    def create_pair(prefix)
+      raw_seed = SecureRandom.random_bytes(Ed25519::KEY_SIZE).bytes
+      seed     = Codec.encode_seed(prefix, raw_seed)
+      KeyPair.new(seed)
+    end
 
-      KeyPair.new(seed: seed, keys: keys)
+    # @return [NKEYS::KeyPair]
+    def create_operator
+      create_pair(Prefix::OPERATOR)
+    end
+
+    # @return [NKEYS::KeyPair]
+    def create_account
+      create_pair(Prefix::ACCOUNT)
+    end
+
+    # @return [NKEYS::KeyPair]
+    def create_user
+      create_pair(Prefix::USER)
+    end
+
+    # @return [NKEYS::KeyPair]
+    def create_cluster
+      create_pair(Prefix::CLUSTER)
+    end
+
+    # @return [NKEYS::KeyPair]
+    def create_server
+      create_pair(Prefix::SERVER)
     end
 
     # Create a keypair capable of verifying signatures.
     # @param [String] public_key The public key to create the KeyPair.
-    def from_public_key(public_key)
-      KeyPair.new(public_key: public_key)
+    def from_public(src)
+      raw    = Codec._decode(src)
+      prefix = Prefixes.parse_prefix(raw[0])
+      if Prefixes.valid_public_prefix?(prefix)
+        return PublicKey.new(src)
+      end
+      raise NKEYS::InvalidPublicKey
     end
 
-    def decode_seed(src)
-      if src.nil? || src.empty?
-        raise NKEYS::InvalidSeed, "nkeys: Invalid Seed"
-      end
-
-      # Take the encoded seed if provided and generate the private and public keys,
-      # since both are needed to be able to sign things.
-      raw = nil
-      begin
-        base32_decoded = Base32.decode(src).bytes
-        raw = base32_decoded[0...(base32_decoded.size-2)]
-      rescue
-        raise NKEYS::InvalidSeed, "nkeys: Invalid Seed"
-      end
-
-      # 248 = 11111000
-      b1 = raw[0] & 248
-
-      # 7 = 00000111
-      b2 = (raw[0] & 7) << 5 | ((raw[1] & 248) >> 3)
-
-      if b1 != PREFIX_BYTE_SEED
-        raise NKEYS::InvalidSeed, "nkeys: Invalid Seed"
-      elsif !valid_public_prefix_byte(b2)
-        raise NKEYS::InvalidPrefixByte, "nkeys: Invalid Prefix Byte"
-      end
-
-      prefix = b2
-      result = raw[2..(raw.size)].pack('c*')
-
-      [prefix, result]
+    # Create a keypair to use for signing from a seed.
+    # @param [String] seed The seed from which can create a public/private KeyPair.
+    def from_seed(src)
+      Codec.decode_seed(src)
+      KeyPair.new(src)
     end
 
-    def valid_public_prefix_byte(prefix)
-      case
-      when prefix == PREFIX_BYTE_OPERATOR; true
-      when prefix == PREFIX_BYTE_SERVER; true
-      when prefix == PREFIX_BYTE_CLUSTER; true
-      when prefix == PREFIX_BYTE_ACCOUNT; true
-      when prefix == PREFIX_BYTE_USER; true
-      else
-        false
-      end
-    end
-
-    def valid_prefix_byte(prefix)
-      case
-      when prefix == PREFIX_BYTE_OPERATOR; true
-      when prefix == PREFIX_BYTE_SERVER; true
-      when prefix == PREFIX_BYTE_CLUSTER; true
-      when prefix == PREFIX_BYTE_ACCOUNT; true
-      when prefix == PREFIX_BYTE_USER; true
-      when prefix == PREFIX_BYTE_SEED; true
-      when prefix == PREFIX_BYTE_PRIVATE; true
-      else
-        false
-      end
-    end
   end
 end
