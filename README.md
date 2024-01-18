@@ -70,7 +70,7 @@ uk = NKEYS.create_operator
 puts "SEED:       #{uk.seed}"
 puts "PUBLIC KEY: #{uk.public_key}"
 
-uk = NKEYS.create_user
+uk = NKEYS.create_account
 puts "SEED:       #{uk.seed}"
 puts "PUBLIC KEY: #{uk.public_key}"
 
