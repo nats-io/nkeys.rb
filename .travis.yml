@@ -2,7 +2,6 @@ language: ruby
 dist: xenial
 
 rvm:
-  - 3.0
   - 3.2
   - 3.3
 before_install:
