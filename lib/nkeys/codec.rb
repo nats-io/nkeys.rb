@@ -3,6 +3,10 @@ require "base32"
 class Codec
   SeedDecode = Struct.new(:buf, :prefix)
 
+  # Encode the a public or private key
+  # @param [String] prefix
+  # @param [String] src
+  # @return [String]
   def self.encode(prefix, src)
     unless src.is_a?(Array)
       raise NKEYS::SerializationError
@@ -15,6 +19,10 @@ class Codec
     _encode(false, prefix, src)
   end
 
+  # Encode the a seed
+  # @param [String] prefix
+  # @param [String] src
+  # # @return [String]
   def self.encode_seed(prefix_byte, src)
     raise NKEYS::ApiError unless src.is_a?(Array)
     raise NKEYS::InvalidPrefixByte unless Prefixes.valid_public_prefix?(prefix_byte)
@@ -32,6 +40,9 @@ class Codec
     raw[1..-1]
   end
 
+  # Decode the seed
+  # @param [String] src
+  # @return [SeedDecode]
   def self.decode_seed(src)
     raw    = _decode(src)
     prefix = _decode_prefix(raw)

@@ -42,6 +42,7 @@ module NKEYS
 
   class << self
 
+    # Create a keypair with correct prefix
     # @return [NKEYS::KeyPair]
     def create_pair(prefix)
       raw_seed = SecureRandom.random_bytes(Ed25519::KEY_SIZE).bytes
@@ -49,26 +50,31 @@ module NKEYS
       KeyPair.new(seed)
     end
 
+    # Create a keypair for an operator
     # @return [NKEYS::KeyPair]
     def create_operator
       create_pair(Prefix::OPERATOR)
     end
 
+    # Create a keypair for an Account
     # @return [NKEYS::KeyPair]
     def create_account
       create_pair(Prefix::ACCOUNT)
     end
 
+    # Create a keypair for a User
     # @return [NKEYS::KeyPair]
     def create_user
       create_pair(Prefix::USER)
     end
 
+    # Create a keypair for a Cluster
     # @return [NKEYS::KeyPair]
     def create_cluster
       create_pair(Prefix::CLUSTER)
     end
 
+    # Create a keypair for a Server
     # @return [NKEYS::KeyPair]
     def create_server
       create_pair(Prefix::SERVER)
