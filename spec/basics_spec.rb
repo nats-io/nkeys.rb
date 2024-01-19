@@ -46,7 +46,7 @@ def test_clear(kp)
   }.to raise_error(NKEYS::ClearedPair)
 end
 
-describe "Basisc" do
+describe "Basics" do
   let(:bad_key) do
     a  = NKEYS.create_account
     pk = a.public_key.bytes
