@@ -2,5 +2,7 @@ language: ruby
 dist: xenial
 
 rvm:
-  - 2.5
-  - 2.6
+  - 3.2
+  - 3.3
+before_install:
+ - gem install bundler
