@@ -35,7 +35,7 @@ def test_key(kp, kind)
 end
 
 def test_clear(kp)
-  kp.clear
+  kp.wipe!
 
   expect {
     kp.public_key

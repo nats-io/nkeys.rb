@@ -58,12 +58,12 @@ puts "SEED:       #{kp.seed}"
 puts "PUBLIC KEY: #{kp.public_key}"
 
 # Sign some data with the KeyPair user.
-data = "Yv0MLXx29ApwLt4="
+data   = "Yv0MLXx29ApwLt4="
 signed = kp.sign(data)
 puts "SIGNED:     #{Base64.urlsafe_encode64(signed)}"
 
 # Clear the keys after using them
-kp.clear
+kp.wipe!
 
 ## Create keys
 uk = NKEYS.create_operator

@@ -61,7 +61,7 @@ module NKEYS
     end
 
     # Removes the public key
-    def clear
+    def wipe!
       @public_key = nil
     end
   end
@@ -122,7 +122,7 @@ module NKEYS
     end
 
     # Removes the seed
-    def clear
+    def wipe!
       @seed = nil
     end
   end
