@@ -49,8 +49,9 @@ module NKEYS
     # @param [String] sig
     # @return [Bool] the result of verifying the signed input.
     def verify(input, sig)
-      # TODO
-      return
+      @keys.verify_key.verify(sig, input)
+    rescue Ed25519::VerifyError
+      false
     end
 
     def public_key
